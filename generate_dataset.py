@@ -89,7 +89,7 @@ def get_dataset(path):
 	X_val, y_val = prepare_all_images(img_paths_and_classes_validation)
 	X_test, y_test = prepare_all_images(img_paths_and_classes_test)
 
-	return (X_train,y_train),(X_test,y_test),(X_val,y_val),class_id
+	return X_train,y_train,X_test,y_test,X_val,y_val,class_id
 
 if __name__=='__main__':
 	get_dataset('dataset')
