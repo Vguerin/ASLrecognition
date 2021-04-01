@@ -26,7 +26,7 @@ def get_labels_id(path):
 	    #Create image path for every images of every class
 	    for file in files:
 	        filepath = os.path.join(subdir, file)
-	        if filepath.endswith(".jpg"):
+	        if filepath.endswith(".jpg"): # or filepath.endswith(".png"):
 	            image_paths[classes[-1]].append(filepath)
 
 	img_class_ids = {classe: index for index, classe in enumerate(classes)}
