@@ -8,12 +8,13 @@ class InterBlock(tf.keras.layers.Layer):
 		super().__init__(**kwargs)
 		self.hidden = [tf.keras.layers.Conv2D(input_neurons, (3, 3),activation='relu',input_shape=input_shape),
 						tf.keras.layers.MaxPooling2D(2, 2),
-						tf.keras.layers.Dropout(0.2),]
-		for block in range(1,nb_block-1):
+						tf.keras.layers.Dropout(0.2)]
+		for block in range(1,nb_block):
 			temp = [tf.keras.layers.Conv2D((input_neurons/2), (3, 3), activation='relu'),
 							tf.keras.layers.MaxPooling2D(2, 2),
-							tf.keras.layers.Dropout(0.2),]
+							tf.keras.layers.Dropout(0.2)]
 			self.hidden = np.hstack((self.hidden,temp))
+		print(self.hidden)
 
 
 class ASLmodel(tf.keras.Model):
@@ -24,6 +25,7 @@ class ASLmodel(tf.keras.Model):
 		self.block2 = tf.keras.layers.Dense(128, activation=tf.nn.relu)
 		self.block3 = tf.keras.layers.Dropout(0.2)
 		self.out = tf.keras.layers.Dense(output_dim, activation=tf.nn.softmax)
+
 
 	def call(self,inputs):
 		Z = self.hidden_layers(inputs)
