@@ -7,7 +7,7 @@ from shutil import copyfile
 """This script allow to create training and testing directory
     and then fill each one with every class according to split_size parameters """
 
-def split_data(SOURCE, TRAINING, TESTING, SPLIT_SIZE):
+def split_data(SOURCE, TRAINING, TESTING, VALIDATION, SPLIT_SIZE):
     files = []
     for filename in os.listdir(SOURCE):
         if not filename.startswith('.'):
@@ -18,10 +18,12 @@ def split_data(SOURCE, TRAINING, TESTING, SPLIT_SIZE):
                 print(filename + " is zero length, so ignoring.")
 
     training_length = int(len(files) * SPLIT_SIZE)
-    testing_length = int(len(files) - training_length)
+    testing_length = int((len(files) - training_length)/2)
+    validation_length = testing_length
     shuffled_set = random.sample(files, len(files))
     training_set = shuffled_set[0:training_length]
-    testing_set = shuffled_set[:testing_length]
+    testing_set = shuffled_set[training_length:training_length+testing_length]
+    validation_set = shuffled_set[training_length+testing_length:]
 
     for filename in training_set:
         this_file = SOURCE + "\\" + filename
@@ -33,6 +35,10 @@ def split_data(SOURCE, TRAINING, TESTING, SPLIT_SIZE):
         destination = TESTING + "\\" + filename
         copyfile(this_file, destination)
 
+    for filename in validation_set:
+        this_file = SOURCE + "\\" + filename
+        destination = VALIDATION + "\\" + filename
+        copyfile(this_file, destination)
 
 
 def run_split_train_test(MAIN_DIRECTORY):
@@ -63,18 +69,29 @@ def run_split_train_test(MAIN_DIRECTORY):
             os.mkdir(folder)
 
     os.chdir(parent_dir)
+        
+    if 'validation' not in str(folders):
+        os.mkdir('dataset/validation')
+        print("Create validation folder")
+        os.chdir('dataset/validation')
+        for folder in folders:
+            os.mkdir(folder)
+
+    os.chdir(parent_dir)
 
     SOURCE = os.getcwd()+'\\dataset'
     TRAINING_DIR = os.getcwd()+'\\dataset\\training'
     TESTING_DIR = os.getcwd()+'\\dataset\\testing'
+    VALIDATION_DIR = os.getcwd()+'\\dataset\\validation'
 
     ### FILLING TRAINING AND TESTING FOLDER FOR EACH CLASS ###
 
     for folder in folders:
-        if folder == 'training' or 'testing':
+        if folder == 'training' or folder == 'testing' or folder == 'validation':
             continue
         else:
-            split_data(SOURCE+'\\'+folder,TRAINING_DIR+'\\'+folder,TESTING_DIR+'\\'+folder,0.8)
+            split_data(SOURCE+'\\'+folder,TRAINING_DIR+'\\'+folder,TESTING_DIR+'\\'+folder,VALIDATION_DIR+'\\'+folder,0.7)
+            print("Done {}".format(folder))
     
     print("Split Done")
 

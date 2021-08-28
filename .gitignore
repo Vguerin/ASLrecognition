@@ -130,9 +130,8 @@ dmypy.json
 
 #Training Folder
 training/
+dataset/
 
 #Test_code
 test_code.ipynb
 
-#Handtracking
-handtracking/
