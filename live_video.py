@@ -5,19 +5,14 @@ import numpy as np
 import mediapipe as mp
 from tensorflow.keras import models
 from collections import deque
-
-def prepare_image(image, target_width = 120, target_height = 120):
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    image = image * (1.0/255.0)
-    image_resized = cv2.resize(image,(target_width,target_height))
-    return image_resized
+from data_preprocessing import prepare_image
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
 #Load trained model
-my_model = .models.load_model('model/DenseNet201_120_rgb_full_da_full_layers_add.h5')
+my_model = models.load_model('model/DenseNet201_120_rgb_full_da_full_layers_add')
 
 class_id = ['A','B','C','D','E','F','G','H','I','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y']
 
@@ -105,10 +100,14 @@ with mp_hands.Hands(min_detection_confidence=0.5,min_tracking_confidence=0.5) as
             index= np.argmax(mean_result)
             predict_class = class_id[index]
 
-            text = "Letter is : " + predict_class
+            text = "Prediction is : " + predict_class
             font = cv2.FONT_HERSHEY_SIMPLEX
             cv2.rectangle(img,(avg_x_min,avg_y_min), (avg_x_max,avg_y_max),(255, 0, 0),2)
-            cv2.putText(img,text,(int(width_target/3.5),height_target), font, 0.65,(255,0,0),2,cv2.LINE_AA)
+
+            y_text = avg_y_min-10
+            x_text = avg_x_min+10
+
+            cv2.putText(img,text,(x_text,y_text), font, 0.65,(255,0,0),2,cv2.LINE_AA)
             cv2.imshow('American Sign Recognation',img)
 
         else:
