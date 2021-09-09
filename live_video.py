@@ -12,7 +12,7 @@ mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
 #Load trained model
-my_model = models.load_model('model/DenseNet201_120_rgb_full_da_full_layers_add')
+my_model = models.load_model('model/DenseNet201_120_rgb_full_da_full_layers_add.h5')
 
 class_id = ['A','B','C','D','E','F','G','H','I','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y']
 
@@ -21,11 +21,12 @@ width_target = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 height_target = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
 #Create a queue for mean averaging result
-result_pred = deque(maxlen=10)
-extended_max_x = deque(maxlen=3)
-extended_max_y = deque(maxlen=3)
-extended_min_x = deque(maxlen=3)
-extended_min_y = deque(maxlen=3)
+mean_result = np.zeros(len(class_id))
+result_pred = deque(maxlen=15)
+extended_max_x = deque(maxlen=5)
+extended_max_y = deque(maxlen=5)
+extended_min_x = deque(maxlen=5)
+extended_min_y = deque(maxlen=5)
 
 with mp_hands.Hands(min_detection_confidence=0.5,min_tracking_confidence=0.5) as hands:
 
@@ -100,7 +101,7 @@ with mp_hands.Hands(min_detection_confidence=0.5,min_tracking_confidence=0.5) as
             index= np.argmax(mean_result)
             predict_class = class_id[index]
 
-            text = "Prediction is : " + predict_class
+            text = "Prediction is : {} ({:.2f}%)".format(predict_class,mean_result[0][index]*100)
             font = cv2.FONT_HERSHEY_SIMPLEX
             cv2.rectangle(img,(avg_x_min,avg_y_min), (avg_x_max,avg_y_max),(255, 0, 0),2)
 

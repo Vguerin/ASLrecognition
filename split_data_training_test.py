@@ -1,10 +1,11 @@
 #!usr/bin/python
 import os
+import sys
 import random
 from shutil import copyfile
 
 
-"""This script allow to create training and testing directory
+"""This script allow to create training, testing and validation directory
     and then fill each one with every class according to split_size parameters """
 
 def split_data(SOURCE, TRAINING, TESTING, VALIDATION, SPLIT_SIZE):
@@ -45,46 +46,42 @@ def run_split_train_test(MAIN_DIRECTORY):
 
     ### CREATE ALL FOLDERS ###
     parent_dir = MAIN_DIRECTORY
+    os.chdir(parent_dir)
+    folders = os.listdir()
 
-    if 'dataset' not in str(os.listdir(MAIN_DIRECTORY)):
-        print("Stop program, need a dataset folder")
-        return
-
-    folders = os.listdir('dataset')
-
-    if 'training' not in str(folders):
-        os.mkdir('dataset/training')
+    if 'training' not in str(parent_dir):
+        os.mkdir('training')
         print("Create Training folder")
-        os.chdir('dataset/training')
+        os.chdir('training')
         for folder in folders:
             os.mkdir(folder)
             
     os.chdir(parent_dir)
         
-    if 'testing' not in str(folders):
-        os.mkdir('dataset/testing')
+    if 'testing' not in str(parent_dir):
+        os.mkdir('testing')
         print("Create Testing folder")
-        os.chdir('dataset/testing')
+        os.chdir('testing')
         for folder in folders:
             os.mkdir(folder)
 
     os.chdir(parent_dir)
         
-    if 'validation' not in str(folders):
-        os.mkdir('dataset/validation')
+    if 'validation' not in str(parent_dir):
+        os.mkdir('validation')
         print("Create validation folder")
-        os.chdir('dataset/validation')
+        os.chdir('validation')
         for folder in folders:
             os.mkdir(folder)
 
     os.chdir(parent_dir)
 
-    SOURCE = os.getcwd()+'\\dataset'
-    TRAINING_DIR = os.getcwd()+'\\dataset\\training'
-    TESTING_DIR = os.getcwd()+'\\dataset\\testing'
-    VALIDATION_DIR = os.getcwd()+'\\dataset\\validation'
+    SOURCE = os.getcwd()
+    TRAINING_DIR = os.getcwd()+'\\training'
+    TESTING_DIR = os.getcwd()+'\\testing'
+    VALIDATION_DIR = os.getcwd()+'\\validation'
 
-    ### FILLING TRAINING AND TESTING FOLDER FOR EACH CLASS ###
+    ### FILLING TRAINING, TESTING AND VALIDATION FOLDER FOR EACH CLASS ###
 
     for folder in folders:
         if folder == 'training' or folder == 'testing' or folder == 'validation':
@@ -96,4 +93,10 @@ def run_split_train_test(MAIN_DIRECTORY):
     print("Split Done")
 
 if __name__ == '__main__':
-    run_split_train_test(os.getcwd())
+    if len(sys.argv)<=1:
+        print("ERROR: Need directory argument")
+        sys.exit()
+
+    print(len(sys.argv))
+    directory_folder =  sys.argv[1]
+    run_split_train_test(directory_folder)
